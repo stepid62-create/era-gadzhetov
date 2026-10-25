@@ -306,7 +306,7 @@ function drawDetail(t,s,emo){const g='#8a8f9c';ctx.lineWidth=Math.max(1.4,s*0.02
 // --- 3D-персонажи из Flow (sprites/g0..g8.webp); пока не загрузились — рисуем векторных ---
 const SPR=[],GLOW=[];
 const EMOS=['blink','happy','scared'],SPRX=[];
-const EMO_READY=[];   // номера уровней, для которых уже есть картинки эмоций   // кадры эмоций: sprites/g{t}_blink|happy|scared.webp (если есть)
+const EMO_READY=[0];   // номера уровней, для которых уже есть картинки эмоций   // кадры эмоций: sprites/g{t}_blink|happy|scared.webp (если есть)
 for(let t=0;t<9;t++){const im=new Image();im.src='sprites/g'+t+'.webp';SPR.push(im);
   const ex={};if(EMO_READY.includes(t))for(const e of EMOS){const ei=new Image();ei.onerror=()=>{ex[e]=null;};ei.src='sprites/g'+t+'_'+e+'.webp';ex[e]=ei;}SPRX.push(ex);
   const g=document.createElement('canvas');g.width=g.height=128;const c=g.getContext('2d'),rg=c.createRadialGradient(64,64,4,64,64,64);
@@ -316,8 +316,8 @@ function drawGadget(b,sc=1){const t=b.tier,s=SIZES[t]*sc,now=performance.now(),i
     let k=1+Math.sin(now*0.0032+ph)*0.022;                                   // «дыхание»
     if(b.react&&now-b.react<450){const q=(now-b.react)/450;k+=Math.sin(q*PI*3)*0.07*(1-q);}
     const ex=SPRX[t],ok=e=>ex[e]&&ex[e].complete&&ex[e].naturalWidth;let img=im;   // живые эмоции
-    if(b.react&&now-b.react<800&&ok('happy'))img=ex.happy;
-    else if(b.id&&dangerLevel>0.35&&b.position.y<LINE_Y+170&&ok('scared'))img=ex.scared;
+    if(((b.react&&now-b.react<800)||(b.joy&&now-b.joy<750))&&ok('happy'))img=ex.happy;
+    else if(((b.id&&dangerLevel>0.35&&b.position.y<LINE_Y+170)||(b.scare&&now-b.scare<1000))&&ok('scared'))img=ex.scared;
     else if(((now+ph*977)%3800)<140&&ok('blink'))img=ex.blink;
     ctx.save();ctx.translate(b.position.x,b.position.y);ctx.rotate(b.angle);ctx.scale(1/k,k);
     const [w,h]=dims(t,sc);ctx.drawImage(img,-w/2,-h/2,w,h);ctx.restore();return;}
@@ -486,6 +486,7 @@ function processMerges(){while(mq.length){const [a,b]=mq.pop();
   const mx=(a.position.x+b.position.x)/2,my=(a.position.y+b.position.y)/2,t=a.tier;
   Composite.remove(world,a);Composite.remove(world,b);combo++;comboTimer=520;
   let nt=t<MAX?t+1:t;if(t<MAX){const nb=spawn(mx,my,nt);nb.pop=performance.now();nb.react=performance.now();}
+  {const nw=performance.now();for(const o of gadgets())if(Math.hypot(o.position.x-mx,o.position.y-my)<SIZES[nt]*1.6)o.joy=nw;}   // соседи радуются слиянию
   if(nt>maxTier){maxTier=nt;if(nt>=4)grant(mx,my);}
   if(nt===MAX)sTop();else sMerge(nt,combo);haptic(nt>=6||combo>=3?'heavy':'light');
   const base=t<MAX?POINTS[nt]:150;addScore(base*combo);
@@ -593,7 +594,7 @@ function grant(x,y){const r=Math.random(),k=r<0.4?'del':r<0.75?'shake':'up';PW[k
   texts.push({x,y:y-40,t:'+1 '+PW[k].name,life:1.4,vy:-0.7,s:0.85,c:'#22D3EE'});}
 function doShake(){PW.shake.n--;aiming=null;updPw();const now=performance.now();
   for(const b of gadgets()){Body.setVelocity(b,{x:(Math.random()-0.5)*7,y:-3-Math.random()*5});
-    Body.setAngularVelocity(b,(Math.random()-0.5)*0.3);b.spawn=now;}
+    Body.setAngularVelocity(b,(Math.random()-0.5)*0.3);b.spawn=now;b.scare=now;}
   shake=Math.min(shake+12,22);flash=0.35;flashCol='#22D3EE';haptic('heavy');
   noise({dur:0.45,vol:0.14,cut:300,decay:1.5,send:0.3});voice({freq:90,to:55,dur:0.4,type:'sine',vol:0.18,cut:500});
   waves.push({x:W/2,y:H-60,r:20,mr:W*0.7,life:1,c:'#22D3EE'});
