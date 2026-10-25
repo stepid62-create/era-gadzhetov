@@ -306,7 +306,7 @@ function drawDetail(t,s,emo){const g='#8a8f9c';ctx.lineWidth=Math.max(1.4,s*0.02
 // --- 3D-персонажи из Flow (sprites/g0..g8.webp); пока не загрузились — рисуем векторных ---
 const SPR=[],GLOW=[];
 const EMOS=['blink','happy','scared'],SPRX=[];
-const EMO_READY=[0];   // номера уровней, для которых уже есть картинки эмоций   // кадры эмоций: sprites/g{t}_blink|happy|scared.webp (если есть)
+const EMO_READY=[0,1,2,3,4,5,6,7,8];   // номера уровней, для которых уже есть картинки эмоций   // кадры эмоций: sprites/g{t}_blink|happy|scared.webp (если есть)
 for(let t=0;t<9;t++){const im=new Image();im.src='sprites/g'+t+'.webp';SPR.push(im);
   const ex={};if(EMO_READY.includes(t))for(const e of EMOS){const ei=new Image();ei.onerror=()=>{ex[e]=null;};ei.src='sprites/g'+t+'_'+e+'.webp';ex[e]=ei;}SPRX.push(ex);
   const g=document.createElement('canvas');g.width=g.height=128;const c=g.getContext('2d'),rg=c.createRadialGradient(64,64,4,64,64,64);
