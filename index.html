@@ -298,7 +298,16 @@ function drawDetail(t,s,emo){const g='#8a8f9c';ctx.lineWidth=Math.max(1.4,s*0.02
       ctx.save();ctx.translate(s*dx,s*dyy);ctx.rotate(0.4);
       rr(-s*0.015,-s*0.06,s*0.03,s*0.12,s*0.008);ctx.fill();rr(-s*0.06,-s*0.015,s*0.12,s*0.03,s*0.008);ctx.fill();
       ctx.restore();}}}
-function drawGadget(b,sc=1){const t=b.tier,s=SIZES[t]*sc,now=performance.now();
+// --- 3D-персонажи из Flow (sprites/g0..g8.webp); пока не загрузились — рисуем векторных ---
+const SPR=[],GLOW=[];
+for(let t=0;t<9;t++){const im=new Image();im.src='sprites/g'+t+'.webp';SPR.push(im);
+  const g=document.createElement('canvas');g.width=g.height=128;const c=g.getContext('2d'),rg=c.createRadialGradient(64,64,4,64,64,64);
+  rg.addColorStop(0,FILLS[t]+'AA');rg.addColorStop(0.55,FILLS[t]+'33');rg.addColorStop(1,FILLS[t]+'00');c.fillStyle=rg;c.fillRect(0,0,128,128);GLOW.push(g);}
+function drawGadget(b,sc=1){const t=b.tier,s=SIZES[t]*sc,now=performance.now(),im=SPR[t];
+  if(im.complete&&im.naturalWidth){let k=1;if(b.react&&now-b.react<450){const q=(now-b.react)/450;k=1+Math.sin(q*PI*3)*0.06*(1-q);}
+    ctx.save();ctx.translate(b.position.x,b.position.y);
+    const gs=s*1.7;ctx.drawImage(GLOW[t],-gs/2,-gs/2,gs,gs);           // цветная подсветка уровня
+    ctx.rotate(b.angle);ctx.scale(k,1/k);const d=s*1.18;ctx.drawImage(im,-d/2,-d/2,d,d);ctx.restore();return;}
   let emo=EMO[t];if(b.react&&now-b.react<450)emo='excited';
   ctx.save();ctx.translate(b.position.x,b.position.y);ctx.rotate(b.angle);
   rr(-s/2,-s/2,s,s,s*0.26);ctx.lineWidth=Math.max(2.4,s*0.06)+3;ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.stroke();
