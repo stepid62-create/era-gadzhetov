@@ -73,6 +73,8 @@
     background:rgba(26,31,39,.85);border:1px solid #262E3A;border-radius:12px;color:#22D3EE;cursor:pointer;
     box-shadow:inset 0 0 10px rgba(34,211,238,.08);transition:transform .12s;}
   .pw svg{width:20px;height:20px;}
+  .pw img{width:32px;height:32px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));pointer-events:none;}
+  .pw.empty img{filter:grayscale(1) brightness(.6);opacity:.55;}
   .pw b{position:absolute;right:-5px;bottom:-5px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;
     background:linear-gradient(135deg,#22D3EE,#3B82F6);color:#0E1116;font:800 10.5px/17px "Onest",system-ui;}
   .pw.on{background:linear-gradient(135deg,#22D3EE,#3B82F6);color:#0E1116;box-shadow:0 0 18px rgba(34,211,238,.65);transform:scale(1.06);}
@@ -156,9 +158,9 @@
       </div>
     </div>
     <div class="powers" id="powers">
-      <button class="pw" data-p="del" aria-label="Утилизация"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg><b>1</b></button>
-      <button class="pw" data-p="shake" aria-label="Встряска"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="18" rx="2"/><path d="M4 8v8M20 8v8M1.5 10v4M22.5 10v4"/></svg><b>1</b></button>
-      <button class="pw" data-p="up" aria-label="Апгрейд"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12l6-6 6 6M6 19l6-6 6 6"/></svg><b>0</b></button>
+      <button class="pw" data-p="del" aria-label="Утилизация"><img src="sprites/ic_del.webp" alt=""><b>1</b></button>
+      <button class="pw" data-p="shake" aria-label="Встряска"><img src="sprites/ic_shake.webp" alt=""><b>1</b></button>
+      <button class="pw" data-p="up" aria-label="Апгрейд"><img src="sprites/ic_up.webp" alt=""><b>0</b></button>
     </div>
     <div class="ctrls">
       <button class="ic" id="pauseBtn" aria-label="Пауза" style="display:none"></button>
