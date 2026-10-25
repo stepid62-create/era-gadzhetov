@@ -194,6 +194,9 @@ if(document.fonts&&document.fonts.load){document.fonts.load('800 42px "Onest"');
 
 const OUT='#11151C', SCR='#D3F6FC';
 const SIZES=[38,48,60,74,90,108,128,150,174];
+// пропорции персонажей (ширина/высота) — тело в физике повторяет силуэт картинки, площадь как у квадрата SIZES
+const ASP=[0.932,0.948,0.576,0.648,0.799,0.703,0.622,0.534,0.661];
+function dims(t,sc=1){const s=SIZES[t]*sc,q=Math.sqrt(ASP[t]);return [s*q,s/q];}
 const NAMES=['Дискета','Кассета','Кирпич','Раскладушка','Плеер','Кнопкофон','Сенсор','Флагман','Раритет'];
 const FILLS=['#4B5A70','#C2864E','#3B82F6','#8B7CF6','#E2E8F0','#E0566F','#2A313D','#22D3EE','#161B23'];
 const EMO=['sleepy','chill','proud','wink','vibe','smug','cool','rich','star'];
@@ -302,9 +305,10 @@ function drawDetail(t,s,emo){const g='#8a8f9c';ctx.lineWidth=Math.max(1.4,s*0.02
       ctx.restore();}}}
 // --- 3D-персонажи из Flow (sprites/g0..g8.webp); пока не загрузились — рисуем векторных ---
 const SPR=[],GLOW=[];
-const EMOS=['blink','happy','scared'],SPRX=[];   // кадры эмоций: sprites/g{t}_blink|happy|scared.webp (если есть)
+const EMOS=['blink','happy','scared'],SPRX=[];
+const EMO_READY=[];   // номера уровней, для которых уже есть картинки эмоций   // кадры эмоций: sprites/g{t}_blink|happy|scared.webp (если есть)
 for(let t=0;t<9;t++){const im=new Image();im.src='sprites/g'+t+'.webp';SPR.push(im);
-  const ex={};for(const e of EMOS){const ei=new Image();ei.onerror=()=>{ex[e]=null;};ei.src='sprites/g'+t+'_'+e+'.webp';ex[e]=ei;}SPRX.push(ex);
+  const ex={};if(EMO_READY.includes(t))for(const e of EMOS){const ei=new Image();ei.onerror=()=>{ex[e]=null;};ei.src='sprites/g'+t+'_'+e+'.webp';ex[e]=ei;}SPRX.push(ex);
   const g=document.createElement('canvas');g.width=g.height=128;const c=g.getContext('2d'),rg=c.createRadialGradient(64,64,4,64,64,64);
   rg.addColorStop(0,FILLS[t]+'AA');rg.addColorStop(0.55,FILLS[t]+'33');rg.addColorStop(1,FILLS[t]+'00');c.fillStyle=rg;c.fillRect(0,0,128,128);GLOW.push(g);}
 function drawGadget(b,sc=1){const t=b.tier,s=SIZES[t]*sc,now=performance.now(),im=SPR[t];
@@ -316,7 +320,7 @@ function drawGadget(b,sc=1){const t=b.tier,s=SIZES[t]*sc,now=performance.now(),i
     else if(b.id&&dangerLevel>0.35&&b.position.y<LINE_Y+170&&ok('scared'))img=ex.scared;
     else if(((now+ph*977)%3800)<140&&ok('blink'))img=ex.blink;
     ctx.save();ctx.translate(b.position.x,b.position.y);ctx.rotate(b.angle);ctx.scale(1/k,k);
-    const d=s*1.18;ctx.drawImage(img,-d/2,-d/2,d,d);ctx.restore();return;}
+    const [w,h]=dims(t,sc);ctx.drawImage(img,-w/2,-h/2,w,h);ctx.restore();return;}
   let emo=EMO[t];if(b.react&&now-b.react<450)emo='excited';
   ctx.save();ctx.translate(b.position.x,b.position.y);ctx.rotate(b.angle);
   rr(-s/2,-s/2,s,s,s*0.26);ctx.lineWidth=Math.max(2.4,s*0.06)+3;ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.stroke();
@@ -469,11 +473,11 @@ let held=rnd(),next=rnd(),pointerX=W/2,canDrop=true,gameOver=false,overTimer=0;
 let combo=0,comboTimer=0,shake=0,dangerLevel=0,flash=0,flashCol='#22D3EE';const parts=[],texts=[],waves=[],mq=[];
 document.getElementById('bestVal').textContent=best;
 function rnd(){return Math.floor(Math.random()*DROPPABLE);}
-function spawn(x,y,t,vy=0){const s=SIZES[t];
-  const b=Bodies.rectangle(x,y,s,s,{chamfer:{radius:s*0.26},restitution:0.1,friction:0.5,
-    frictionStatic:0.7,density:0.0016});b.tier=t;b.merged=false;b.spawn=performance.now();
+function spawn(x,y,t,vy=0){const [w,h]=dims(t);
+  const b=Bodies.rectangle(x,y,w,h,{chamfer:{radius:Math.min(w,h)*0.2},restitution:0.1,friction:0.5,
+    frictionStatic:0.7,density:0.0016});b.tier=t;b.hh=h/2;b.merged=false;b.spawn=performance.now();
   Body.setVelocity(b,{x:0,y:vy});Composite.add(world,b);return b;}
-function drop(){if(!canDrop||gameOver||!started||paused)return;const s=SIZES[held],x=Math.max(s/2+2,Math.min(W-s/2-2,pointerX));
+function drop(){if(!canDrop||gameOver||!started||paused)return;const s=dims(held)[0],x=Math.max(s/2+2,Math.min(W-s/2-2,pointerX));
   spawn(x,52,held,2);sDrop();if(held>maxTier)maxTier=held;held=next;next=rnd();canDrop=false;setTimeout(()=>canDrop=true,470);}
 Events.on(engine,'collisionStart',ev=>{for(const {bodyA:a,bodyB:b} of ev.pairs){
   if(a.tier===undefined||b.tier===undefined)continue;
@@ -499,7 +503,7 @@ function burst(x,y,c,n,glow){for(let i=0;i<n;i++){const a=Math.random()*6.283,sp
   parts.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,c,rot:Math.random()*6.28,vr:(Math.random()-0.5)*0.3,glow});}}
 function checkOver(dt){const now=performance.now();let d=false,minEdge=H;
   for(const b of Composite.allBodies(world)){if(b.tier===undefined)continue;
-    const edge=b.position.y-SIZES[b.tier]/2;
+    const edge=b.position.y-(b.hh||SIZES[b.tier]/2);
     const settled=(now-b.spawn>500)&&Math.hypot(b.velocity.x,b.velocity.y)<1.5;
     if(settled&&edge<minEdge)minEdge=edge;
     if(now-b.spawn<900)continue;
@@ -663,7 +667,7 @@ function drawStart(now){const t=now*0.002,bob=Math.sin(now*0.0015)*2,ph=(now*0.0
   text3D('Эра гаджетов',W/2,142+bob,44,'#ffffff','#22D3EE','#000000','#000000',0,ph);ctx.letterSpacing='0px';
   ctx.font='600 12px "Onest", system-ui';ctx.letterSpacing='3px';
   ctx.fillStyle='#9AA4B2';ctx.fillText('ОТ ДИСКЕТЫ ДО РАРИТЕТА',W/2+1.5,172);ctx.letterSpacing='0px';
-  const hy=272,gy=Math.sin(t)*6,hs=0.84,fy=hy+SIZES[8]*hs/2+12;
+  const hy=268,gy=Math.sin(t)*6,hs=0.72,fy=hy+dims(8,hs)[1]/2+10;
   drawHalo(W/2,hy,100,now);drawFloor(W/2,fy,120);
   drawReflection(8,W/2,hy+gy,hs,fy,34);
   drawGadget({tier:8,position:{x:W/2,y:hy+gy},angle:Math.sin(t*0.7)*0.05},hs);
@@ -709,7 +713,7 @@ function loop(now){const dt=Math.min(now-last,33);last=now;
     ctx.save();ctx.globalAlpha=Math.min(tx.life*1.6,1);ctx.textAlign='center';
     ctx.font=`700 ${17*tx.s}px "Onest",system-ui`;ctx.lineWidth=4;ctx.strokeStyle=OUT;ctx.strokeText(tx.t,tx.x,tx.y);
     ctx.fillStyle=tx.c;ctx.fillText(tx.t,tx.x,tx.y);ctx.restore();}
-  if(!gameOver){const s=SIZES[held],x=Math.max(s/2+2,Math.min(W-s/2-2,pointerX));
+  if(!gameOver){const s=dims(held)[0],x=Math.max(s/2+2,Math.min(W-s/2-2,pointerX));
     ctx.save();ctx.globalAlpha=0.45;ctx.strokeStyle='rgba(34,211,238,0.9)';ctx.setLineDash([3,6]);ctx.lineWidth=2;
     ctx.beginPath();ctx.moveTo(x,72);ctx.lineTo(x,H);ctx.stroke();ctx.restore();
     drawGadget({tier:held,position:{x,y:50},angle:0});}
