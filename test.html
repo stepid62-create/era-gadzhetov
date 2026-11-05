@@ -82,25 +82,41 @@
   .pw.empty{color:#4a5363;}
   .pw.empty b{background:#2A313D;color:#6b7585;}
   .pw:active{transform:scale(.94);}
-  .board{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
-    background:rgba(9,10,16,.95);z-index:6;}
-  .board .card{background:rgba(26,31,39,.96);border:1px solid #262E3A;border-radius:18px;padding:18px 20px;
-    width:min(88%,330px);display:flex;flex-direction:column;gap:12px;
-    box-shadow:inset 0 0 22px rgba(34,211,238,.06),0 12px 44px rgba(0,0,0,.6);}
-  .board h3{margin:0;text-align:center;font-family:"Onest",system-ui;font-weight:800;font-size:18px;color:#22D3EE;
-    text-shadow:0 0 12px rgba(34,211,238,.3);}
-  .board ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;max-height:44vh;overflow-y:auto;}
-  .board li{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03);border:1px solid #202a38;
-    border-radius:10px;padding:7px 10px;font-size:14px;}
-  .board li.me{border-color:#22D3EE;box-shadow:0 0 10px rgba(34,211,238,.25);}
-  .board li .rk{width:24px;text-align:center;font-weight:700;color:#7a869c;}
-  .board li .nm{flex:1;color:#e6edf6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .board li .sc{font-family:"Onest",system-ui;font-variant-numeric:tabular-nums;font-weight:700;color:#22D3EE;}
-  .board .empty{color:#8a94a8;font-size:13px;text-align:center;padding:12px;line-height:1.5;}
-  .board input{background:#0e1017;border:1px solid #2a3547;border-radius:10px;padding:9px 12px;color:#e6edf6;
-    font-family:"Onest",system-ui;font-size:14px;width:100%;}
-  .board input{-webkit-user-select:text;user-select:text;touch-action:auto;}
-  .board input:focus{outline:none;border-color:#22D3EE;}
+  .board,.nick{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
+    background:rgba(9,10,16,.95);z-index:6;padding:12px;}
+  .nick{z-index:7;}
+  .board .card,.nick .card{background:#161B23;border:1px solid #262E3A;border-radius:18px;padding:20px 18px 16px;
+    width:min(92%,340px);display:flex;flex-direction:column;gap:12px;box-shadow:0 16px 48px rgba(0,0,0,.55);}
+  .board h3,.nick h3{margin:0;font-family:"Onest",system-ui;font-weight:800;font-size:20px;color:#F3F6FA;letter-spacing:-.2px;}
+  .board .bsub,.nick .bsub{margin:-8px 0 0;font-size:13px;color:#8A94A6;line-height:1.4;}
+  .board ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;max-height:46vh;overflow-y:auto;
+    border-top:1px solid #222A36;-webkit-overflow-scrolling:touch;}
+  .board li{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid #222A36;font-size:15px;}
+  .board li .rk{width:26px;height:26px;flex:none;display:flex;align-items:center;justify-content:center;border-radius:50%;
+    font-family:"Onest",system-ui;font-weight:700;font-size:13px;color:#8A94A6;font-variant-numeric:tabular-nums;}
+  .board li.p1 .rk{background:#E8C36A;color:#1A1405;}
+  .board li.p2 .rk{background:#C9D1DC;color:#14181F;}
+  .board li.p3 .rk{background:#C98A5A;color:#1A0F07;}
+  .board li .nm{flex:1;min-width:0;color:#E6EDF6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .board li .nm i{font-style:normal;color:#8A94A6;font-size:12px;margin-left:6px;}
+  .board li .sc{font-family:"Onest",system-ui;font-variant-numeric:tabular-nums;font-weight:700;color:#F3F6FA;}
+  .board li.me{background:rgba(34,211,238,.07);border-radius:10px;border-bottom-color:transparent;padding-left:8px;padding-right:8px;}
+  .board li.me .sc{color:#22D3EE;}
+  .board li.tap{cursor:pointer;}
+  .board li.tap .nm i{color:#22D3EE;}
+  .board li.tap:active{background:rgba(255,255,255,.04);}
+  .board li.gap{justify-content:center;color:#4A5568;padding:2px;border-bottom:none;font-size:13px;}
+  .board .mine{display:flex;align-items:center;gap:10px;font-size:13px;color:#8A94A6;}
+  .board .mine b{color:#E6EDF6;font-weight:600;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .board .mine button{margin-left:auto;background:none;border:1px solid #2A3547;border-radius:10px;color:#C9D1DC;
+    font:600 13px "Onest",system-ui;padding:6px 12px;cursor:pointer;}
+  .board .empty{color:#8A94A6;font-size:14px;text-align:center;padding:22px 8px;line-height:1.5;}
+  .board .btn,.nick .btn{width:100%;}
+  .nick input{background:#0E1017;border:1px solid #2A3547;border-radius:12px;padding:12px 14px;color:#F3F6FA;
+    font-family:"Onest",system-ui;font-size:17px;width:100%;box-sizing:border-box;-webkit-user-select:text;user-select:text;touch-action:auto;}
+  .nick input:focus{outline:none;border-color:#22D3EE;}
+  .nick .err{min-height:16px;margin:-6px 0 0;font-size:12px;color:#FF7A8A;}
+  .nick .skip{background:none;border:none;color:#8A94A6;font:500 13px "Onest",system-ui;padding:4px;cursor:pointer;}
   .pmenu{display:flex;flex-direction:column;gap:9px;margin-top:14px;width:230px;}
   .pmenu .btn{width:100%;}
   #pauseOv{z-index:4;}
@@ -151,10 +167,21 @@
     </div>
     <div class="board" id="board">
       <div class="card">
-        <h3>🏆 ТОП ИГРОКОВ</h3>
+        <h3>Топ игроков</h3>
+        <p class="bsub">Лучшие результаты всех, кто играл</p>
         <ol id="boardList"></ol>
-        <input id="nameInput" maxlength="16" placeholder="твоё имя для таблицы">
+        <div class="mine">Ты в таблице: <b id="myNick">—</b><button id="nickEdit">Изменить</button></div>
         <button class="btn" id="boardClose">Назад</button>
+      </div>
+    </div>
+    <div class="nick" id="nick">
+      <div class="card">
+        <h3>Как тебя записать?</h3>
+        <p class="bsub">Этот ник увидят все в таблице рекордов</p>
+        <input id="nickInput" maxlength="16" autocomplete="off" autocapitalize="words" placeholder="Твой ник" enterkeyhint="done">
+        <p class="err" id="nickErr"></p>
+        <button class="btn" id="nickOk">Играть</button>
+        <button class="skip" id="nickSkip">Без таблицы</button>
       </div>
     </div>
     <div class="powers" id="powers">
@@ -549,31 +576,68 @@ let clientId=LS.get('upg_cid');if(!clientId){clientId='u'+Math.random().toString
 let playerName=LS.get('upg_name')||'';
 function icTrophy(){return '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h12v4a6 6 0 0 1-12 0V4z"/><path d="M6 6H3v1a3 3 0 0 0 3 3M18 6h3v1a3 3 0 0 1-3 3" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="10.5" y="12" width="3" height="4"/><rect x="7" y="19" width="10" height="2" rx="1"/><rect x="9" y="16" width="6" height="3" rx="1"/></svg>';}
 function esc(s){return (s+'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));}
+let myRank=null,boardState='load';
+document.getElementById('boardList').addEventListener('click',e=>{if(!isAdmin)return;const li=e.target.closest('li.tap');if(li)openPlayer(li.dataset.id);});
 function renderBoard(){const list=document.getElementById('boardList');if(!list)return;
-  if(DB===null){list.innerHTML='<div class="empty">Общая таблица скоро появится.<br>Твой рекорд: '+best+'</div>';return;}
-  if(!board.length){list.innerHTML='<div class="empty">Пока пусто — стань первым!</div>';return;}
-  const med=['🥇','🥈','🥉'];
-  list.innerHTML=board.map((e,i)=>'<li class="'+(e.id===playerId()?'me':'')+'"><span class="rk">'+(med[i]||(i+1))+'</span><span class="nm">'+esc(e.name||'Гость')+'</span><span class="sc">'+(e.score||0)+'</span></li>').join('');}
+  document.getElementById('myNick').textContent=playerName||'—';
+  if(boardState==='load'&&!board.length){list.innerHTML='<div class="empty">Загружаем таблицу…</div>';return;}
+  if(DB===null){list.innerHTML='<div class="empty">Не получилось загрузить таблицу.<br>Проверь интернет и открой ещё раз.<br>Твой рекорд: '+best+'</div>';return;}
+  if(!board.length){list.innerHTML='<div class="empty">Пока никого нет.<br>Сыграй — и будешь первым.</div>';return;}
+  const me=playerId();let inTop=false;
+  let h=board.map((e,i)=>{const mine=e.id===me;if(mine)inTop=true;
+    const c=isAdmin?CONTACTS[e.id]:null,tag=isAdmin?'<i>'+(c?(c.username?'@'+esc(c.username):'нет @username'):'не из Telegram')+'</i>':(mine?'<i>это ты</i>':'');
+    return '<li class="'+(i<3?'p'+(i+1):'')+(mine?' me':'')+(c&&c.username?' tap':'')+'" data-id="'+esc(e.id)+'"><span class="rk">'+(i+1)+'</span><span class="nm">'+esc(e.name||'Гость')+tag+'</span><span class="sc">'+(e.score||0)+'</span></li>';}).join('');
+  if(!inTop&&myRank&&best>0)h+='<li class="gap">···</li><li class="me"><span class="rk">'+myRank+'</span><span class="nm">'+esc(playerName||'Ты')+'<i>это ты</i></span><span class="sc">'+best+'</span></li>';
+  list.innerHTML=h;}
 // общая таблица рекордов: Supabase (публичный ключ; записать можно только через submit_score, рекорд только растёт)
 const SB='https://rphjwxwzamltzaevmiml.supabase.co/rest/v1',SBH={apikey:'sb_publishable_LTFRoHcY0CJ2SbMdSYg6XQ_SkUCCBOx','Content-Type':'application/json'};
+// серверная функция: проверяет подпись Telegram; только через неё пишутся рекорды из Telegram и читаются контакты (для админа)
+const FN='https://rphjwxwzamltzaevmiml.supabase.co/functions/v1/game',FNK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwaGp3eHd6YW1sdHphZXZtaW1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzE0ODYsImV4cCI6MjEwOTQ0NzQ4Nn0.YxbArR5IJCCjVIYhLoY9zXbfr-YoeTcp560IOKh3ZNA';
+async function callFn(body){const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+FNK,apikey:FNK},body:JSON.stringify(body)});
+  return r.ok?r.json():null;}
+function tgInit(){try{return TG&&TG.initData||'';}catch(e){return '';}}
+let isAdmin=false,CONTACTS={};
+async function checkAdmin(){const d=tgInit();if(!d)return;try{const j=await callFn({action:'admin',initData:d});
+  if(j&&j.admin){isAdmin=true;CONTACTS={};for(const c of j.contacts||[])CONTACTS[c.id]=c;renderBoard();}}catch(e){}}
+function openPlayer(id){const c=CONTACTS[id];if(!c||!c.username)return;
+  const url='https://t.me/'+c.username;try{TG.openTelegramLink(url);}catch(e){location.href=url;}}
 function playerId(){try{const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;if(u&&u.id)return 'tg'+u.id;}catch(e){}return clientId;}
-async function loadBoard(){try{const r=await fetch(SB+'/scores?select=id,name,score&order=score.desc&limit=10',{headers:SBH});
+async function loadBoard(){try{const r=await fetch(SB+'/scores?select=id,name,score&order=score.desc,updated_at.asc&limit=20',{headers:SBH});
     if(!r.ok)throw 0;board=await r.json();DB=true;}catch(e){if(DB!==true)DB=null;}
-  const vis=DB?'':'none';document.getElementById('lb').style.display=vis;document.getElementById('ovBoard').style.display=vis;renderBoard();}
+  boardState='done';myRank=null;
+  if(DB&&best>0&&!board.some(e=>e.id===playerId())){try{const r=await fetch(SB+'/scores?select=id&score=gt.'+best,{headers:Object.assign({Prefer:'count=exact',Range:'0-0'},SBH)});
+    const cr=r.headers.get('content-range');if(cr)myRank=(+cr.split('/')[1]||0)+1;}catch(e){}}
+  const vis=DB?'':'none';for(const id of ['lb','ovBoard','pBoard'])document.getElementById(id).style.display=vis;renderBoard();}
 function inTGenv(){return /tgWebApp/.test(location.hash+location.search)||!!window.TelegramWebviewProxy||window.parent!==window;}
 async function initDB(){await loadBoard();if(!inTGenv())submitScore();}   // в Telegram отправим после загрузки SDK — под id аккаунта
-async function submitScore(){const id=playerId();if(!playerName||!(best>0))return;
+async function submitScore(){const id=playerId();if(!playerName||!nickAsked()||LS.get('upg_skip')==='1'||!(best>0))return;
   const key='upg_sub_'+id;if(best<=+(LS.get(key)||0))return;
-  try{const r=await fetch(SB+'/rpc/submit_score',{method:'POST',headers:SBH,body:JSON.stringify({p_id:id,p_name:playerName.slice(0,16),p_score:best})});
-    if(r.ok){LS.set(key,best);loadBoard();}}catch(e){}}
+  try{let ok=false;const d=tgInit();
+    if(d){const j=await callFn({action:'submit',initData:d,name:playerName.slice(0,16),score:best});ok=!!(j&&j.ok);}
+    else{const r=await fetch(SB+'/rpc/submit_score',{method:'POST',headers:SBH,body:JSON.stringify({p_id:id,p_name:playerName.slice(0,16),p_score:best})});ok=r.ok;}
+    if(ok){LS.set(key,best);loadBoard();if(isAdmin)checkAdmin();}}catch(e){}}
 const lbBtn=document.getElementById('lb');lbBtn.innerHTML=icTrophy();
 function openBoard(){document.getElementById('board').style.display='flex';renderBoard();loadBoard();}
 lbBtn.addEventListener('click',openBoard);
 document.getElementById('ovBoard').addEventListener('click',openBoard);
 document.getElementById('boardClose').addEventListener('click',()=>document.getElementById('board').style.display='none');
-const nameInput=document.getElementById('nameInput');nameInput.value=playerName;
-nameInput.addEventListener('input',()=>{playerName=nameInput.value.trim();LS.set('upg_name',playerName);});
-nameInput.addEventListener('change',()=>{LS.set('upg_sub_'+playerId(),0);submitScore();});
+// --- окно ника: спрашиваем один раз перед первой игрой, потом можно поменять в таблице ---
+const nickEl=document.getElementById('nick'),nickInput=document.getElementById('nickInput'),nickErr=document.getElementById('nickErr');
+let nickThen=null;
+function nickAsked(){return LS.get('upg_nick_ok')==='1';}
+function openNick(then){nickThen=then||null;nickInput.value=playerName||'';nickErr.textContent='';
+  document.getElementById('nickOk').textContent=then?'Играть':'Сохранить';
+  document.getElementById('nickSkip').textContent=then?'Без таблицы':'Отмена';
+  nickEl.style.display='flex';setTimeout(()=>{try{nickInput.focus();}catch(e){}},60);}
+function closeNick(){nickEl.style.display='none';try{nickInput.blur();}catch(e){}const f=nickThen;nickThen=null;if(f)f();}
+function saveNick(){const v=nickInput.value.replace(/\s+/g,' ').trim();
+  if(v.length<2){nickErr.textContent='Минимум 2 символа';return;}
+  const changed=v!==playerName;playerName=v.slice(0,16);LS.set('upg_name',playerName);LS.set('upg_nick_ok','1');LS.set('upg_skip','0');
+  if(changed)LS.set('upg_sub_'+playerId(),0);submitScore();renderBoard();closeNick();}
+document.getElementById('nickOk').addEventListener('click',saveNick);
+nickInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();saveNick();}});
+document.getElementById('nickSkip').addEventListener('click',()=>{if(nickThen){LS.set('upg_nick_ok','1');playerName='';LS.set('upg_name','');LS.set('upg_skip','1');}closeNick();});
+document.getElementById('nickEdit').addEventListener('click',()=>openNick(null));
 initDB();
 // --- Telegram Mini App: на весь экран, шапка в цвет игры, без закрытия свайпом, имя из Telegram, вибро ---
 let TG=null;
@@ -588,8 +652,8 @@ function initTG(){TG=window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData?
   try{TG.ready();TG.expand();TG.onEvent&&TG.onEvent('viewportChanged',fit);TG.setHeaderColor('#0E1116');TG.setBackgroundColor('#0E1116');
   if(TG.disableVerticalSwipes)TG.disableVerticalSwipes();}catch(e){}
   const u=TG.initDataUnsafe&&TG.initDataUnsafe.user;
-  if(u&&!playerName){playerName=(u.first_name||u.username||'').slice(0,16);LS.set('upg_name',playerName);nameInput.value=playerName;}
-  cloudLoadBest();submitScore();
+  if(u&&!playerName){playerName=(u.first_name||u.username||'').slice(0,16);}   // подставим в окно ника, но спросим подтверждение
+  cloudLoadBest();submitScore();checkAdmin();
   document.getElementById('cta').addEventListener('click',e=>{e.preventDefault();try{TG.openTelegramLink('https://t.me/stepich_1');}catch(err){location.href='https://t.me/stepich_1';}});}
 // SDK грузим без блокировки: если telegram.org недоступен, игра всё равно стартует
 if(/tgWebApp/.test(location.hash+location.search)||window.TelegramWebviewProxy||window.parent!==window){
@@ -625,10 +689,11 @@ function usePower(x,y){const hit=Query.point(gadgets(),{x,y})[0],k=aiming;aiming
   haptic('medium');updPw();canDrop=false;setTimeout(()=>canDrop=true,300);}
 function lx(cx){const r=canvas.getBoundingClientRect();return (cx-r.left)/r.width*W;}
 function ly(cy){const r=canvas.getBoundingClientRect();return (cy-r.top)/r.height*H;}
+function startGame(){if(started)return;initAudio();started=true;sStart();if(musicOn)startMusic();updPw();}
 canvas.addEventListener('pointermove',e=>pointerX=lx(e.clientX));
 canvas.addEventListener('pointerdown',e=>pointerX=lx(e.clientX));
 canvas.addEventListener('pointerup',e=>{pointerX=lx(e.clientX);
-  if(!started){if(inPB(lx(e.clientX),ly(e.clientY))){initAudio();started=true;sStart();if(musicOn)startMusic();updPw();}return;}
+  if(!started){if(inPB(lx(e.clientX),ly(e.clientY))){if(nickAsked())startGame();else openNick(startGame);}return;}
   if(aiming){usePower(lx(e.clientX),ly(e.clientY));return;}
   drop();});
 window.addEventListener('pointerdown',()=>{initAudio();if(musicOn)startMusic();},{once:true});
