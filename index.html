@@ -362,7 +362,7 @@ function drawGadget(b,sc=1){const t=b.tier,s=SIZES[t]*sc,now=performance.now(),i
     else if(((b.id&&dangerLevel>0.35&&b.position.y<LINE_Y+170)||(b.scare&&now-b.scare<1000))&&ok('scared'))img=ex.scared;
     else if(((now+ph*977)%3800)<140&&ok('blink'))img=ex.blink;
     ctx.save();ctx.translate(b.position.x,b.position.y);ctx.rotate(b.angle);ctx.scale(1/k,k);
-    const [w,h]=dims(t,sc);ctx.drawImage(bm(img,t),-w/2,-h/2,w,h);ctx.restore();return;}
+    const [w,h]=dims(t,sc);ctx.drawImage(img,-w/2,-h/2,w,h);ctx.restore();return;}   // рисуем оригинал: на iPhone так чётче
   let emo=EMO[t];if(b.react&&now-b.react<450)emo='excited';
   ctx.save();ctx.translate(b.position.x,b.position.y);ctx.rotate(b.angle);
   rr(-s/2,-s/2,s,s,s*0.26);ctx.lineWidth=Math.max(2.4,s*0.06)+3;ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.stroke();
