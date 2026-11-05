@@ -515,7 +515,7 @@ function checkOver(dt){const now=performance.now();let d=false,minEdge=H;
     if(Math.hypot(b.velocity.x,b.velocity.y)<0.9&&edge<LINE_Y){d=true;}}
   dangerLevel=Math.max(0,Math.min(1,(LINE_Y+70-minEdge)/70));
   if(d){overTimer+=dt;if(overTimer>1400)end();}else overTimer=Math.max(0,overTimer-dt*2);}
-function end(){gameOver=true;aiming=null;updPw();sOver();submitScore();
+function end(){gameOver=true;aiming=null;updPw();sOver();submitScore();cloudSaveBest();
   document.getElementById('finalScore').textContent=score;
   document.getElementById('ovSub').innerHTML='рекорд: '+best+' · твой топ: <b>'+NAMES[maxTier]+'</b>';
   document.getElementById('ovBadge').style.display=newRec?'block':'none';
@@ -547,39 +547,49 @@ musBtn.addEventListener('click',()=>{toggleMusic();updIcons();});
 let DB=null,board=[];
 let clientId=LS.get('upg_cid');if(!clientId){clientId='u'+Math.random().toString(36).slice(2,10);LS.set('upg_cid',clientId);}
 let playerName=LS.get('upg_name')||'';
-let submittedBest=+(LS.get('upg_sub')||0);
 function icTrophy(){return '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h12v4a6 6 0 0 1-12 0V4z"/><path d="M6 6H3v1a3 3 0 0 0 3 3M18 6h3v1a3 3 0 0 1-3 3" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="10.5" y="12" width="3" height="4"/><rect x="7" y="19" width="10" height="2" rx="1"/><rect x="9" y="16" width="6" height="3" rx="1"/></svg>';}
 function esc(s){return (s+'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));}
 function renderBoard(){const list=document.getElementById('boardList');if(!list)return;
   if(DB===null){list.innerHTML='<div class="empty">Общая таблица скоро появится.<br>Твой рекорд: '+best+'</div>';return;}
   if(!board.length){list.innerHTML='<div class="empty">Пока пусто — стань первым!</div>';return;}
   const med=['🥇','🥈','🥉'];
-  list.innerHTML=board.map((e,i)=>'<li class="'+(e.id===clientId?'me':'')+'"><span class="rk">'+(med[i]||(i+1))+'</span><span class="nm">'+esc(e.name||'Гость')+'</span><span class="sc">'+(e.score||0)+'</span></li>').join('');}
-async function initDB(){
-  if(window.claude&&claude.use){try{DB=await claude.use('db');}catch(e){DB=null;}}
-  if(DB){try{DB.collection('scores').orderBy('score','desc').limit(10).onSnapshot(s=>{
-    board=s.docs.map(d=>Object.assign({id:d.id},d.data()));renderBoard();});}catch(e){}}
-  renderBoard();}
-function submitScore(){if(DB&&playerName&&best>submittedBest&&best>0){
-  try{DB.doc('scores/'+clientId).set({name:playerName.slice(0,16),score:best,ts:Date.now()});
-    submittedBest=best;LS.set('upg_sub',best);}catch(e){}}}
+  list.innerHTML=board.map((e,i)=>'<li class="'+(e.id===playerId()?'me':'')+'"><span class="rk">'+(med[i]||(i+1))+'</span><span class="nm">'+esc(e.name||'Гость')+'</span><span class="sc">'+(e.score||0)+'</span></li>').join('');}
+// общая таблица рекордов: Supabase (публичный ключ; записать можно только через submit_score, рекорд только растёт)
+const SB='https://rphjwxwzamltzaevmiml.supabase.co/rest/v1',SBH={apikey:'sb_publishable_LTFRoHcY0CJ2SbMdSYg6XQ_SkUCCBOx','Content-Type':'application/json'};
+function playerId(){try{const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;if(u&&u.id)return 'tg'+u.id;}catch(e){}return clientId;}
+async function loadBoard(){try{const r=await fetch(SB+'/scores?select=id,name,score&order=score.desc&limit=10',{headers:SBH});
+    if(!r.ok)throw 0;board=await r.json();DB=true;}catch(e){if(DB!==true)DB=null;}
+  const vis=DB?'':'none';document.getElementById('lb').style.display=vis;document.getElementById('ovBoard').style.display=vis;renderBoard();}
+function inTGenv(){return /tgWebApp/.test(location.hash+location.search)||!!window.TelegramWebviewProxy||window.parent!==window;}
+async function initDB(){await loadBoard();if(!inTGenv())submitScore();}   // в Telegram отправим после загрузки SDK — под id аккаунта
+async function submitScore(){const id=playerId();if(!playerName||!(best>0))return;
+  const key='upg_sub_'+id;if(best<=+(LS.get(key)||0))return;
+  try{const r=await fetch(SB+'/rpc/submit_score',{method:'POST',headers:SBH,body:JSON.stringify({p_id:id,p_name:playerName.slice(0,16),p_score:best})});
+    if(r.ok){LS.set(key,best);loadBoard();}}catch(e){}}
 const lbBtn=document.getElementById('lb');lbBtn.innerHTML=icTrophy();
-function openBoard(){document.getElementById('board').style.display='flex';renderBoard();}
+function openBoard(){document.getElementById('board').style.display='flex';renderBoard();loadBoard();}
 lbBtn.addEventListener('click',openBoard);
 document.getElementById('ovBoard').addEventListener('click',openBoard);
 document.getElementById('boardClose').addEventListener('click',()=>document.getElementById('board').style.display='none');
 const nameInput=document.getElementById('nameInput');nameInput.value=playerName;
 nameInput.addEventListener('input',()=>{playerName=nameInput.value.trim();LS.set('upg_name',playerName);});
-nameInput.addEventListener('change',submitScore);
+nameInput.addEventListener('change',()=>{LS.set('upg_sub_'+playerId(),0);submitScore();});
 initDB();
 // --- Telegram Mini App: на весь экран, шапка в цвет игры, без закрытия свайпом, имя из Telegram, вибро ---
 let TG=null;
+// --- личный рекорд в облаке Telegram (привязан к аккаунту, виден на всех устройствах) ---
+function cloudOk(){return TG&&TG.CloudStorage&&TG.isVersionAtLeast&&TG.isVersionAtLeast('6.9');}
+function cloudSaveBest(){if(!cloudOk())return;try{TG.CloudStorage.setItem('best',String(best));}catch(e){}}
+function cloudLoadBest(){if(!cloudOk())return;try{TG.CloudStorage.getItem('best',(err,v)=>{if(err)return;const c=+v||0;
+  if(c>best){best=c;LS.set('upg_best',best);document.getElementById('bestVal').textContent=best;submitScore();}
+  else if(best>c)cloudSaveBest();});}catch(e){}}
 function haptic(k){try{TG&&TG.HapticFeedback&&TG.HapticFeedback.impactOccurred(k);}catch(e){}}
 function initTG(){TG=window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData?Telegram.WebApp:null;if(!TG)return;
   try{TG.ready();TG.expand();TG.onEvent&&TG.onEvent('viewportChanged',fit);TG.setHeaderColor('#0E1116');TG.setBackgroundColor('#0E1116');
   if(TG.disableVerticalSwipes)TG.disableVerticalSwipes();}catch(e){}
   const u=TG.initDataUnsafe&&TG.initDataUnsafe.user;
   if(u&&!playerName){playerName=(u.first_name||u.username||'').slice(0,16);LS.set('upg_name',playerName);nameInput.value=playerName;}
+  cloudLoadBest();submitScore();
   document.getElementById('cta').addEventListener('click',e=>{e.preventDefault();try{TG.openTelegramLink('https://t.me/stepich_1');}catch(err){location.href='https://t.me/stepich_1';}});}
 // SDK грузим без блокировки: если telegram.org недоступен, игра всё равно стартует
 if(/tgWebApp/.test(location.hash+location.search)||window.TelegramWebviewProxy||window.parent!==window){
