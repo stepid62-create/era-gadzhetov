@@ -604,7 +604,7 @@ function renderBoard(){const list=document.getElementById('boardList');if(!list)
   if(!board.length){list.innerHTML='<div class="empty">Пока никого нет.<br>Сыграй — и будешь первым.</div>';return;}
   const me=playerId();let inTop=false;
   let h=board.map((e,i)=>{const mine=e.id===me;if(mine)inTop=true;
-    const c=isAdmin?CONTACTS[e.id]:null,tag=isAdmin?'<i>'+(c?(c.username?'@'+esc(c.username):'нет @username'):'не из Telegram')+'</i>':(mine?'<i>это ты</i>':'');
+    const c=isAdmin?CONTACTS[e.id]:null,tag=isAdmin?'<i>'+(String(e.id).startsWith('bot_')?'бот':c?(c.username?'@'+esc(c.username):'нет @username'):'не из Telegram')+'</i>':(mine?'<i>это ты</i>':'');
     return '<li class="'+(i<3?'p'+(i+1):'')+(mine?' me':'')+(c&&c.username?' tap':'')+'" data-id="'+esc(e.id)+'"><span class="rk">'+(i+1)+'</span><span class="nm">'+esc(e.name||'Гость')+tag+'</span><span class="sc">'+(e.score||0)+'</span></li>';}).join('');
   if(!inTop&&myRank&&best>0)h+='<li class="gap">···</li><li class="me"><span class="rk">'+myRank+'</span><span class="nm">'+esc(playerName||'Ты')+'<i>это ты</i></span><span class="sc">'+best+'</span></li>';
   list.innerHTML=h;}
